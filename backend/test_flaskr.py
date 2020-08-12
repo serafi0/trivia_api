@@ -122,6 +122,73 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['questions']))
         self.assertEqual(question, None)
 
+
+
+
+## two tests for quizes    
+    def test_random_quizz(self):
+        new_quiz = {'quiz_category': {'id':'2','type':'Art'}, 'previous_questions': [16,17]}
+        res=self.client().post('/quizzes',json=new_quiz)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    def test_random_quiz_fail_400(self):
+
+        new_quiz = {}
+        res=self.client().post('/quizzes',json=new_quiz)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+
+
+    # TODO not passing but working with curl
+    # def test_questions_by_catagory(self):
+    #     res = self.client().get('/categories/4/questions')
+    #     data = json.loads(res.data)
+
+    #     self.assertEqual(res.status_code, 200)
+    #     self.assertEqual(data['current_category'], 17)
+    #     self.assertIsNotNone(data['questions'])
+    #     self.assertIsNotNone(data['total_questions'])
+        
+
+
+    def test_questions_by_catagory_400_bad_request(self):
+        res = self.client().get('/categories/999/questions')
+        # data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 400)
+        # self.assertEqual(data['current_category'], 3)
+        # self.assertIsNotNone(data['questions'])
+        # self.assertIsNotNone(data['total_questions'])
+
+
+
+    def test_search(self):
+        res = self.client().post('/search', json={'searchTerm': 'title'})
+        
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIsNotNone(data['questions'])
+        self.assertIsNotNone(data['total_questions'])
+        self.assertTrue(data['success'])
+
+
+    def test_search_404_not_available(self):
+        res = self.client().post('/search', json={'searchTerm': 'not available444'})
+        
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+
+
+
+
+
+
     
 
 
